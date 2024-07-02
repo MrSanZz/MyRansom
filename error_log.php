@@ -88,9 +88,9 @@ function listDirectory($path) {
         echo '<td>' . ($isDir ? '-' : $permissions) . '</td>';
         echo '<td>';
         if (!$isDir) {
-            echo '<a href="?action=edit&file=' . urlencode($filePath) . '">Edit</a> ';
-            echo '<a href="?action=delete&file=' . urlencode($filePath) . '">Delete</a> ';
-            echo '<a href="?action=rename&file=' . urlencode($filePath) . '">Rename</a>';
+            echo '<a href="?action=edit&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Edit</a> ';
+            echo '<a href="?action=delete&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Delete</a> ';
+            echo '<a href="?action=rename&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Rename</a>';
         }
         echo '</td>';
         echo '</tr>';
@@ -107,18 +107,18 @@ function uploadFile($path) {
 
         // Check if file already exists
         if (file_exists($target_file)) {
-            echo 'Sorry, file already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+            echo 'Sorry, file already exists. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
             $uploadOk = 0;
         }
 
         // Check if $uploadOk is set to 0 by an error
         if ($uploadOk == 0) {
-            echo 'Sorry, your file was not uploaded. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+            echo 'Sorry, your file was not uploaded. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
         } else {
             if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $target_file)) {
-                echo "The file " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . ' has been uploaded. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+                echo "The file " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . ' has been uploaded. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
             } else {
-                echo 'Sorry, there was an error uploading your file. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+                echo 'Sorry, there was an error uploading your file. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
             }
         }
     }
@@ -128,9 +128,9 @@ function createNewFolder($path, $folderName) {
     $newFolder = $path . DIRECTORY_SEPARATOR . $folderName;
     if (!file_exists($newFolder)) {
         mkdir($newFolder, 0777, true);
-        echo 'Folder "' . htmlspecialchars($folderName) . '" created successfully. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'Folder "' . htmlspecialchars($folderName) . '" created successfully. <a href="?path=' . urlencode($path) . '">Go back</a>';
     } else {
-        echo 'Folder "' . htmlspecialchars($folderName) . '" already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'Folder "' . htmlspecialchars($folderName) . '" already exists. <a href="?path=' . urlencode($path) . '">Go back</a>';
     }
 }
 
@@ -139,9 +139,9 @@ function createNewFile($path, $fileName) {
     if (!file_exists($newFile)) {
         $fp = fopen($newFile, 'w');
         fclose($fp);
-        echo 'File '" . htmlspecialchars($fileName) . "' created successfully. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'File ' . htmlspecialchars($fileName) . ' created successfully. <a href="?path=' . urlencode($path) . '">Go back</a>';
     } else {
-        echo 'File '" . htmlspecialchars($fileName) . "' already exists. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'File ' . htmlspecialchars($fileName) . ' already exists. <a href="?path=' . urlencode($path) . '">Go back</a>';
     }
 }
 
@@ -155,7 +155,7 @@ if ($action === 'create_folder') {
     if (isset($_POST['folder_name']) && !empty($_POST['folder_name'])) {
         createNewFolder($path, $_POST['folder_name']);
     } else {
-        echo 'Folder name cannot be empty. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'Folder name cannot be empty. <a href="?path=' . urlencode($path) . '">Go back</a>';
     }
     exit;
 }
@@ -164,7 +164,7 @@ if ($action === 'create_file') {
     if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
         createNewFile($path, $_POST['file_name']);
     } else {
-        echo 'File name cannot be empty. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'File name cannot be empty. <a href="?path=' . urlencode($path) . '">Go back</a>';
     }
     exit;
 }
@@ -180,7 +180,7 @@ if ($action === 'edit' && !empty($file)) {
         echo '<textarea name="content" rows="20" cols="80">' . htmlspecialchars($content) . '</textarea><br>';
         echo '<input type="submit" value="Save">';
         echo '</form>';
-        echo '<a href="?path=' . urlencode(dirname($file)) . '">Cancel</a>';
+        echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
     }
     exit;
 }
@@ -188,9 +188,9 @@ if ($action === 'edit' && !empty($file)) {
 if ($action === 'delete' && !empty($file)) {
     if (is_file($file)) {
         unlink($file);
-        echo 'File deleted! <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'File deleted! <a href="?path=' . urlencode($path) . '">Go back</a>';
     } else {
-        echo 'Invalid file. <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'Invalid file. <a href="?path=' . urlencode($path) . '">Go back</a>';
     }
     exit;
 }
@@ -199,14 +199,14 @@ if ($action === 'rename' && !empty($file)) {
     if (isset($_POST['new_name'])) {
         $newName = dirname($file) . DIRECTORY_SEPARATOR . $_POST['new_name'];
         rename($file, $newName);
-        echo 'File renamed! <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo 'File renamed! <a href="?path=' . urlencode($path) . '">Go back</a>';
     } else {
         echo '<h1>Rename File: ' . basename($file) . '</h1>';
         echo '<form method="post">';
         echo '<input type="text" name="new_name" value="' . basename($file) . '"><br>';
         echo '<input type="submit" value="Rename">';
         echo '</form>';
-        echo '<a href="?path=' . urlencode(dirname($file)) . '">Cancel</a>';
+        echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
     }
     exit;
 }
