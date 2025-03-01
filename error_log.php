@@ -232,12 +232,14 @@ if ($action === 'edit' && !empty($file)) {
         echo 'File saved! <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
     } else {
         $content = file_get_contents($file);
+        echo '<body>';
         echo '<h1>Edit File: ' . basename($file) . '</h1>';
         echo '<form method="post">';
-        echo '<textarea name="content" rows="20" cols="80">' . htmlspecialchars($content) . '</textarea><br>';
+        echo '<textarea name="content" rows="40" cols="175">' . htmlspecialchars($content) . '</textarea><br>';
         echo '<input type="submit" value="Save">';
         echo '</form>';
         echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
+        echo '</body>';
     }
     exit;
 }
@@ -276,13 +278,63 @@ ob_end_flush();
     <title>Hoshino Shells!.</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Courier New', monospace, sans-serif;
+            background-color: #2b2b2b;
+            color: #f8f8f2;
             margin: 0;
             padding: 20px;
+            line-height: 1.6;
+            overflow: auto, hidden; /* Memastikan konten tetap bisa di-scroll */
+            scrollbar-width: none; /* Untuk browser Firefox */
+            -ms-overflow-style: none; /* Untuk browser Internet Explorer dan Edge */
         }
+
+        .editor-container {
+            display: flex;
+            border: 1px solid #555;
+            border-radius: 12px;
+            overflow: hidden;
+            width: 80%;
+            max-width: 900px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .line-numbers {
+            background: #1e1e1e;
+            padding: 12px 8px;
+            text-align: right;
+            color: #888;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        textarea {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            outline: none;
+            font-family: monospace;
+            background: #2e2e2e;
+            color: #fff;
+            resize: none;
+            line-height: 1.5;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #333;
+        }
+        
         h1 {
-            color: #333;
+            color:rgb(255, 108, 211);
         }
         .action-buttons {
             float: right;
@@ -307,13 +359,13 @@ ob_end_flush();
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color:rgb(78, 78, 78);
         }
         tr:hover {
-            background-color: #ddd;
+            background-color:rgb(31, 31, 31);
         }
         a {
-            color: #2196F3;
+            color:rgb(52, 175, 93);
             text-decoration: none;
         }
         a:hover {
