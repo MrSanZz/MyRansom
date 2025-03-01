@@ -117,7 +117,7 @@ function listDirectory($path) {
         }
         if ($isDir) {
             foreach (['delete' => 'Delete', 'rename' => 'Rename'] as $action => $label) {
-                echo "<a href='?action=$action&dir=" . urlencode($filePath) . "&path=" . urlencode($path) . "' onclick='return confirm(\"Are you sure $label this folder?\")'>$label</a> ";
+                echo "<a href='?action=$action&dir=" . urlencode($filePath) . "&path=" . urlencode($path) . "' onclick='return confirm(\"Yakin ingin $label folder ini?\")'>$label</a> ";
             }
         }
         echo '</td>';
