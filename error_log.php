@@ -7,15 +7,19 @@ $validPassword = 'Djaya3';
 
 // Proses logout
 if (isset($_GET['logout'])) {
-    session_unset(); // Hapus semua variabel sesi
-    session_destroy(); // Hancurkan sesi
+    $redirect_url = strtok($_SERVER['REQUEST_URI'], '?'); // Ambil URL tanpa query string
+
+    // Hapus semua variabel sesi
+    session_unset();
+    session_destroy();
 
     // Hapus cookie PHPSESSID
     if (isset($_COOKIE[session_name()])) {
         setcookie(session_name(), '', time() - 3600, '/');
     }
 
-    header("Location: login.php"); // Redirect ke halaman login
+    // Redirect ke halaman tanpa ?logout=true
+    header("Location: $redirect_url");
     exit();
 }
 
